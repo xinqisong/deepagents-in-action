@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from deepagents import create_deep_agent
 from langchain_openai import ChatOpenAI
 from tavily import TavilyClient
+from langchain.agents.middleware import TodoListMiddleware
 
 load_dotenv()
 
@@ -59,12 +60,13 @@ def internet_search(query: str, max_results: int = 3) -> str:
 agent = create_deep_agent(
     model=model,
     tools=[get_weather, calculator, internet_search],
+    middleware=[TodoListMiddleware()],
     system_prompt="""
     你是一个助手。
-    用户询问天气时，调用 get_weather。
-    用户提出数学计算时，调用 calculator。
-    涉及网络信息或最新资料时，必须调用 internet_search。
-    """,
+    复杂任务开始时，先拆分研究步骤并维护任务列表。
+    涉及网络信息时，必须调用 internet_search。
+    最后输出结构清晰、带来源链接的报告。
+    """
 )
 
 
@@ -73,7 +75,10 @@ result = agent.invoke(
         "messages":[
             {
                 "role": "user",
-                "content": "请搜索 DeepAgents 官方资料，并总结它的主要功能，同时提供来源链接。"
+                "content": """
+                请研究 DeepAgents 的核心能力、与 LangChain 和 LangGraph 的区别，
+                并整理成一份中文学习报告，要求提供官方来源链接。
+                """
             }
         ]
     }
