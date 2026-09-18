@@ -75,6 +75,10 @@ KeyError: 'message'
 北京今天天气晴朗，气温适宜，适合外出活动。
 ~~~
 
+实际运行截图：
+
+![创建最小 Agent 的实际运行结果](assert/01-Agent.png)
+
 ## 五、添加天气工具
 
 添加 get_weather(city: str) 工具后，Agent 的执行流程变为：
@@ -97,6 +101,10 @@ KeyError: 'message'
 - 参数类型标注帮助模型理解工具参数。
 - docstring 帮助模型理解工具用途。
 - tools=[get_weather] 将工具注册给 Agent。
+
+实际运行截图：
+
+![天气工具的实际运行结果](assert/02-天气工具.png)
 
 ## 六、添加计算器工具
 
@@ -150,6 +158,10 @@ Tavily 搜索互联网
 Tavily 搜索工具执行成功，并生成带来源链接的报告。
 ~~~
 
+
+实际运行截图：
+
+![联网搜索的实际运行结果](assert/03-联网搜索.png)
 ## 八、添加 TodoListMiddleware
 
 加入 TodoListMiddleware() 后，Agent 可以在处理复杂问题时维护任务列表。
@@ -190,6 +202,10 @@ TodoListMiddleware：已加入并成功产生结果
 
 目前已经了解 LangSmith 的配置方式和查询命令，但还没有拿到具体 trace 层级输出，因此暂时不记录具体节点数量。
 
+
+实际运行截图：
+
+![LangSmith tracing 实际运行结果](assert/04-langsmith.png)
 预计可以观察到类似的执行结构：
 
 ~~~text
