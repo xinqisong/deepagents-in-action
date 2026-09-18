@@ -8,4 +8,5 @@
 
 | Task | 内容 | 状态 |
 | --- | --- | --- |
-| task01 | AgentSeek 创建的 DeepAgents research 应用 | 进行中 |
+| task01 | AgentSeek 创建的 DeepAgents research 应用 | 已完成 |
+| task02 | DeepAgents 快速上手：工具调用、联网搜索与任务规划 | 进行中 |
