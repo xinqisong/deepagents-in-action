@@ -11,3 +11,4 @@
 | task01 | AgentSeek 创建的 DeepAgents research 应用 | 已完成 |
 | task02 | DeepAgents 快速上手：工具调用、联网搜索与任务规划 | 进行中 |
 | task03 | 虚拟文件系统与上下文管理 | 已完成 |
+| task04 | 任务规划与中间件 | 已完成 |

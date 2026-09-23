@@ -1,0 +1,11 @@
+[project]
+name = "task04"
+version = "0.1.0"
+description = "DeepAgents chapter 4 task planning and middleware experiments"
+requires-python = ">=3.12"
+dependencies = [
+    "deepagents>=0.7.15",
+    "langchain-openai>=1.6.2",
+    "python-dotenv>=1.2.3",
+    "tavily-python>=0.5",
+]
