@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>第三课：ASGI、HTTP 与部署排障</title>
+    <link rel="stylesheet" href="../assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Task 06 · Lesson 03 · 约 15 分钟</p>
+      <h1>先判断任务连到了哪个 Agent 服务</h1>
+      <p class="lead">本课的唯一目标：你能从 <code>graph_id</code>、<code>url</code> 和 worker 配置入手，解释一个异步任务为什么“找不到、没进展或调用方式不对”。</p>
+
+      <h2>1. graph_id 是服务注册名，不是随便起的名字</h2>
+      <p>本地 <code>langgraph.json</code> 把两个图注册为 <code>supervisor</code> 和 <code>researcher</code>。因此 supervisor 中的 <code>AsyncSubAgent(graph_id="researcher")</code> 必须逐字匹配这个注册键。</p>
+      <pre><code>langgraph.json
+  graphs
+    supervisor  → ./graphs/supervisor.py:graph
+    researcher  → ./graphs/researcher.py:graph
+
+supervisor.py
+  AsyncSubAgent(graph_id="researcher")</code></pre>
+
+      <div class="panel warning">
+        <strong>排障顺序：</strong>先检查 graph 是否注册，再检查 <code>graph_id</code> 是否完全匹配，最后才检查模型、鉴权和并发。名称错误时，任务可能还没真正进入 researcher。
+      </div>
+
+      <h2>2. url 决定传输边界</h2>
+      <table>
+        <thead><tr><th>配置</th><th>调用方式</th><th>适合场景</th></tr></thead>
+        <tbody>
+          <tr><td>不填写 <code>url</code></td><td>同一 Agent Server 内的 ASGI transport</td><td>本地单服务实验，supervisor 和 researcher 一起注册</td></tr>
+          <tr><td>填写 <code>url</code></td><td>通过 HTTP 调用远程 Agent Protocol 服务</td><td>拆分部署、独立扩缩容、额外鉴权</td></tr>
+          <tr><td>填写 <code>headers</code></td><td>给 HTTP 请求附加自定义头</td><td>远程自托管服务的鉴权或租户信息</td></tr>
+        </tbody>
+      </table>
+
+      <p>因此，“把 <code>url</code> 写成 <code>http://127.0.0.1:2024</code>”不是 ASGI，而是让 supervisor 通过 HTTP 访问本地 Agent Server。两种方式都可能可用，但排障时必须知道自己测试的是哪一种。</p>
+
+      <h2>3. 为什么本地 ASGI 仍要求异步父入口</h2>
+      <p>这里的异步指的是 Agent Protocol 后台任务生命周期，不等于“所有 Python 代码都必须手写 <code>async def</code>”。不过当前本地版本的 <code>AsyncSubAgent</code> 在省略 <code>url</code> 时使用异步 ASGI transport，所以父图应通过异步入口运行，例如 <code>ainvoke</code> 或异步流式入口。</p>
+
+      <h2>4. worker 槽位是容量，不是任务数量</h2>
+      <pre><code>--n-jobs-per-worker 4
+
+一个 supervisor run       ≈ 占用一个执行槽位
+两个后台 researcher runs  ≈ 还需要额外槽位
+槽位不足                  → 排队、长时间 running 或没有实质进展</code></pre>
+      <p>这不是状态机错误，而是容量问题。先用一个 supervisor 加一个 researcher 验证链路，再逐步增加并发；不要一开始同时改变模型、传输方式和 worker 数量。</p>
+
+      <h2>5. 本次练习：只做无破坏核对</h2>
+      <ol>
+        <li>打开 <code>langgraph.json</code>，确认 <code>supervisor</code> 和 <code>researcher</code> 都已注册。</li>
+        <li>打开 <code>graphs/supervisor.py</code>，确认 <code>graph_id="researcher"</code>。</li>
+        <li>确认当前配置没有填写 <code>url</code>，因此本章主实验走同部署 ASGI。</li>
+        <li>确认启动命令包含 <code>--n-jobs-per-worker 4</code>。</li>
+        <li>暂时不要改配置；把“配置事实”和“你推测的原因”分开记录。</li>
+      </ol>
+
+      <h2>完成标准</h2>
+      <ul>
+        <li>能解释 <code>graph_id</code> 为什么必须匹配 <code>langgraph.json</code>。</li>
+        <li>能区分不写 <code>url</code> 的 ASGI 和填写 <code>url</code> 的 HTTP。</li>
+        <li>遇到任务长期 <code>running</code> 时，会先检查 worker 容量，而不是立即修改业务代码。</li>
+      </ul>
+
+      <p class="footer">完成核对后，把你确认的四条事实发给我；下一步我们再做一个可恢复的配置排障实验。遇到不清楚的术语，先问我，不需要凭空猜答案。</p>
+      <p>推荐主资料：<a href="https://docs.langchain.com/oss/python/deepagents/async-subagents">LangChain 官方 Async subagents 文档</a>。相关速查：<a href="../reference/async-subagents-reference.html">AsyncSubAgent 速查页</a>。</p>
+    </main>
+  </body>
+</html>

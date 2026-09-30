@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AsyncSubAgent 速查页</title>
+    <link rel="stylesheet" href="../assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Deep Agents · Task 06</p>
+      <h1>AsyncSubAgent 速查页</h1>
+      <p class="lead">异步子 Agent 的核心不是“同时调用几个函数”，而是把长任务变成一个可以启动、查询、更新和取消的后台生命周期。</p>
+
+      <div class="panel">
+        <strong>一句话判断：</strong>短而且需要立即拿结果，用同步 <code>task</code>；可能持续数分钟、允许用户继续对话并需要中途控制，用 <code>AsyncSubAgent</code>。
+      </div>
+
+      <h2>1. 同步与异步</h2>
+      <table>
+        <thead><tr><th>维度</th><th>同步 SubAgent</th><th>异步 SubAgent</th></tr></thead>
+        <tbody>
+          <tr><td>入口</td><td><code>task</code></td><td><code>start_async_task</code></td></tr>
+          <tr><td>返回</td><td>等待最终结果</td><td>立即返回完整 task ID</td></tr>
+          <tr><td>主 Agent</td><td>调用期间等待</td><td>可以继续服务用户</td></tr>
+          <tr><td>中途控制</td><td>不支持</td><td>check / update / cancel / list</td></tr>
+          <tr><td>状态</td><td>一次调用一次结果</td><td>独立 thread 持续累积历史</td></tr>
+        </tbody>
+      </table>
+
+      <h2>2. 配置契约</h2>
+      <pre><code>from deepagents import AsyncSubAgent, create_deep_agent
+
+subagents = [
+    AsyncSubAgent(
+        name="researcher",
+        description="需要多次搜索和综合资料的长程研究",
+        graph_id="researcher",
+        # 不写 url：同部署 ASGI
+        # url="https://example.com"：远程 HTTP
+    )
+]
+
+agent = create_deep_agent(model=model, subagents=subagents)</code></pre>
+      <ul>
+        <li><code>name</code>：主 Agent 选择任务时使用的唯一名称。</li>
+        <li><code>description</code>：路由线索，要写“什么时候使用”和“能完成什么”。</li>
+        <li><code>graph_id</code>：Agent Protocol 服务上的 graph 名称，必须和 <code>langgraph.json</code> 一致。</li>
+        <li><code>url</code>：省略走同部署 ASGI；填写走远程 HTTP。</li>
+        <li><code>headers</code>：自托管 HTTP 服务需要自定义鉴权时使用。</li>
+      </ul>
+
+      <h2>3. 五个控制工具</h2>
+      <table>
+        <thead><tr><th>工具</th><th>什么时候用</th><th>关键动作</th></tr></thead>
+        <tbody>
+          <tr><td><code>start_async_task</code></td><td>用户要求开始长任务</td><td>记录完整 task ID，立即交还控制权</td></tr>
+          <tr><td><code>check_async_task</code></td><td>用户询问进度或结果</td><td>读取实时状态，完成后取最终输出</td></tr>
+          <tr><td><code>update_async_task</code></td><td>用户追加约束</td><td>在原 thread 上追加指令，不重开任务</td></tr>
+          <tr><td><code>cancel_async_task</code></td><td>用户要求停止</td><td>工具先确认 <code>cancelled</code>；再区分服务端 run 与 tracing 状态</td></tr>
+          <tr><td><code>list_async_tasks</code></td><td>需要任务总览</td><td>查看所有任务的实时状态</td></tr>
+        </tbody>
+      </table>
+
+      <h2>4. 生命周期</h2>
+      <pre><code>用户：开始长任务
+  ↓
+Supervisor → start_async_task
+  ↓
+立即得到 task_id；后台 researcher 继续运行
+  ↓
+用户可继续聊天
+  ├─ 问进度 → check_async_task
+  ├─ 加约束 → update_async_task
+  ├─ 停止    → cancel_async_task
+  └─ 看总览  → list_async_tasks
+  ↓
+控制工具常见终态：success / error / cancelled
+被打断的具体 run 或 tracing：可能是 interrupted</code></pre>
+
+      <div class="panel warning">
+        <strong>状态来源要分层：</strong><code>cancel_async_task</code> 的确认、服务端某个 <code>run.status</code> 和 LangSmith tracing 不是同一个字段。当前 <code>deepagents==0.7.19</code> 中，取消后再次 <code>check_async_task</code> 会读取服务端 run 的原始状态，因此可能出现“工具返回 <code>cancelled</code>，随后 check/tracing 显示 <code>interrupted</code>”。<code>update_async_task</code> 也会用 <code>multitask_strategy="interrupt"</code> 中断旧 run。
+      </div>
+      <div class="panel warning">
+        <strong>不要把状态当质量：</strong><code>success</code> 只说明后台 run 正常结束。研究结论是否有依据，仍需来源核验、结构化校验或人工审核。
+      </div>
+
+      <h2>5. 部署与排障</h2>
+      <ul>
+        <li><code>langgraph.json</code> 同时注册 supervisor 和 researcher；<code>graph_id</code> 对不上时会找不到 Agent。</li>
+        <li>本地起步：<code>langgraph dev --n-jobs-per-worker 4</code>。每个活跃 run 占一个 worker 槽位。</li>
+        <li>同步入口与本地 ASGI 要分清：当前 deepagents 类型说明要求省略 <code>url</code> 的 ASGI 传输通过异步父入口调用，例如 <code>ainvoke</code>。</li>
+        <li>状态回答必须先 check/list；对话历史中的旧状态可能已经过时。</li>
+        <li>保留完整 task ID、thread ID 和 run ID，便于在 LangSmith 中把 supervisor 与子 Agent trace 对上。</li>
+        <li>取消后要记录状态来源：工具结果、check/list 结果、服务端 run 和 LangSmith tracing 可能不同。</li>
+      </ul>
+
+      <h2>主要资料</h2>
+      <ol>
+        <li><a href="https://docs.langchain.com/oss/python/deepagents/async-subagents">LangChain 官方：Async subagents</a></li>
+        <li><a href="https://github.com/datawhalechina/deepagents-in-action/blob/main/content/ch06-async-subagents.md">课程第 6 章源码</a></li>
+        <li><a href="https://blog.langchain.dev/agent-protocol-interoperability-for-llm-agents/">LangChain：Agent Protocol</a></li>
+      </ol>
+      <p class="footer">复习时先遮住表格右侧，用自己的话说出每个工具的触发条件；不确定的地方可以直接问老师。</p>
+    </main>
+  </body>
+</html>
+

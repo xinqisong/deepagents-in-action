@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>第二课：取消与任务总览</title>
+    <link rel="stylesheet" href="../assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Task 06 · Lesson 02 · 约 15 分钟</p>
+      <h1>取消一个任务，不等于只看一个状态</h1>
+      <p class="lead">本课的唯一目标：你能区分 <code>check_async_task</code> 和 <code>list_async_tasks</code>，并能记录状态来源，而不是只记录状态文字。</p>
+
+      <h2>先建立知识：两个查询工具</h2>
+      <table>
+        <thead><tr><th>工具</th><th>范围</th><th>当前版本的观察重点</th></tr></thead>
+        <tbody>
+          <tr><td><code>check_async_task</code></td><td>一个指定的 task</td><td>读取这个 task 对应的服务端 run；成功时再取回 thread 结果</td></tr>
+          <tr><td><code>list_async_tasks</code></td><td>所有被 supervisor 跟踪的 task</td><td>汇总任务；非终态通常读取实时状态，终态可能直接使用 supervisor 缓存</td></tr>
+          <tr><td><code>cancel_async_task</code></td><td>一个指定的 task</td><td>请求停止，并先把任务跟踪记录写成 <code>cancelled</code></td></tr>
+        </tbody>
+      </table>
+
+      <div class="panel">
+        <strong>关键原则：</strong>查询范围不同，状态来源也可能不同。<code>check</code> 更接近某个具体 run；<code>list</code> 更像任务看板。看到不同结果时，先记录 task ID、thread ID、run ID 和工具名称。
+      </div>
+
+      <h2>本地版本的取消观察模型</h2>
+      <pre><code>cancel_async_task
+        │
+        ├─ 取消工具确认：cancelled
+        │
+        ├─ check_async_task
+        │      └─ 重新读取服务端 run.status
+        │             └─ 可能观察到 interrupted
+        │
+        └─ list_async_tasks
+               └─ 对终态可能使用 supervisor 缓存
+
+LangSmith tracing 另有自己的观测记录：
+它描述某条执行过程如何结束，不能直接替代任务看板状态。</code></pre>
+
+      <p>这不是要求你预先猜出“最后一定是什么”。实验的目标是学会把每个结果和它的来源绑定起来。</p>
+
+      <h2>实验步骤</h2>
+      <ol>
+        <li>确认 Agent Server 正在运行：<code>uv run langgraph dev --n-jobs-per-worker 4</code>。</li>
+        <li>另开终端运行：<code>uv run python cancel_list_demo.py</code>。</li>
+        <li>记录启动后返回的两个完整 task ID；不要截断。</li>
+        <li>记录取消前的 <code>list_async_tasks</code> 结果。</li>
+        <li>记录取消工具返回的状态，再记录后续 <code>check_async_task</code> 和 <code>list_async_tasks</code> 的状态。</li>
+        <li>等待没有被取消的任务完成，确认它是否仍能独立进入 <code>success</code>。</li>
+      </ol>
+
+      <h2>用这张表记录，不要只贴最后一句话</h2>
+      <table>
+        <thead><tr><th>任务</th><th>task_id</th><th>取消前</th><th>cancel 工具</th><th>check</th><th>list</th><th>来源备注</th></tr></thead>
+        <tbody>
+          <tr><td>A：被取消</td><td>完整 ID</td><td>running</td><td>记录原文</td><td>记录原文</td><td>记录原文</td><td>tool / run / cache / tracing</td></tr>
+          <tr><td>B：继续运行</td><td>完整 ID</td><td>running</td><td>不适用</td><td>稍后 success？</td><td>稍后 success？</td><td>是否独立完成</td></tr>
+        </tbody>
+      </table>
+
+      <h2>完成标准</h2>
+      <ul>
+        <li>能说明 <code>check</code> 是单任务查询，<code>list</code> 是任务总览。</li>
+        <li>能指出取消任务和未取消任务的 task ID 不同，且未取消任务仍可独立完成。</li>
+        <li>能解释同一个任务出现 <code>cancelled</code> 与 <code>interrupted</code> 时，下一步应先检查状态来源。</li>
+      </ul>
+
+      <p class="footer">请先完成实验，再把终端输出或整理后的表格发给我。遇到任何状态不一致，先不要自行修正结论，我们会按 task/thread/run ID 一层层核对。</p>
+      <p>推荐主资料：<a href="https://docs.langchain.com/oss/python/deepagents/async-subagents">LangChain 官方 Async subagents 文档</a>。回顾背景：<a href="../reference/async-subagents-reference.html">AsyncSubAgent 速查页</a>。</p>
+    </main>
+  </body>
+</html>

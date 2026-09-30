@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>第一课：异步子 Agent 的生命周期</title>
+    <link rel="stylesheet" href="../assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Task 06 · Lesson 01 · 约 10 分钟</p>
+      <h1>先把“异步”想成一项后台工作</h1>
+      <p class="lead">本课的唯一目标：你能解释为什么同步 <code>task</code> 不适合长程、可交互任务，并能说出异步任务的四个后续动作。</p>
+
+      <h2>从 task05 接过来的问题</h2>
+      <p>task05 的主 Agent 调用同步子 Agent 后，会等待子 Agent 完成，再拿到结果。如果研究需要几分钟，用户只能等待；如果用户中途想补充“换数据源”或“只关注某个主题”，同步调用没有一个自然的控制入口。</p>
+
+      <h2>新的心智模型</h2>
+      <pre><code>启动不是完成
+
+Supervisor ── start_async_task ──► 后台 thread / run
+     │                              │
+     └── 立刻继续和用户对话          ├─ check：现在怎样？
+                                    ├─ update：加一个约束
+                                    ├─ cancel：停止
+                                    └─ list：查看总览</code></pre>
+
+      <div class="panel">
+        <strong>最重要的区分：</strong>异步子 Agent 是“可管理的后台任务”，不是“把所有同步调用包进 asyncio.gather”。前者有 task ID、独立 thread、状态查询和中途控制；后者只是程序内部的并发写法。
+      </div>
+
+      <h2>先做一次回忆，再打开答案</h2>
+      <ol>
+        <li>如果子任务预计 2 秒完成，你会选同步还是异步？为什么？</li>
+        <li>如果用户问“刚才那个后台任务现在完成了吗？”，主 Agent 应该先做什么？</li>
+        <li>为什么不能只从旧的 ToolMessage 里读取任务状态？</li>
+      </ol>
+      <details>
+        <summary>参考答案</summary>
+        <p>2 秒且需要立即拿结果时选同步；询问进度时先调用 <code>check_async_task</code> 或 <code>list_async_tasks</code>；任务元数据应该在独立的 <code>async_tasks</code> state channel 中保存，因为消息历史可能被压缩，旧消息里的状态也可能过时。</p>
+      </details>
+
+      <h2>本课完成标准</h2>
+      <ul>
+        <li>不用看资料，能说出 <code>start</code>、<code>check</code>、<code>update</code>、<code>cancel</code>、<code>list</code> 的顺序和用途。</li>
+        <li>能指出“success ≠ 结论正确”。</li>
+        <li>能说明异步子 Agent 为什么需要 Agent Protocol 服务，而不只是一个 Python 协程。</li>
+      </ul>
+
+      <p class="footer">下一步：阅读 <a href="../reference/async-subagents-reference.html">速查页</a>，然后按 <a href="../learning.md">学习计划</a> 的 Session 1 开始实验。遇到任何不清楚的词或运行现象，直接问老师。</p>
+      <p>推荐主资料：<a href="https://docs.langchain.com/oss/python/deepagents/async-subagents">LangChain 官方 Async subagents 文档</a>。</p>
+    </main>
+  </body>
+</html>
+
