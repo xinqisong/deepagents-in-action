@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Skills 速查页</title>
+    <link rel="stylesheet" href="../../assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Deep Agents · Task 07</p>
+      <h1>Skills 速查页</h1>
+      <p class="lead">Skill 是可复用的领域工作流包：它把触发条件、操作步骤、参考资料和可选代码放在一个目录里，并按需加载。</p>
+
+      <div class="panel">
+        <strong>一句话心智模型：</strong>Tool 告诉 Agent “能做一个什么原子动作”；Skill 告诉 Agent “遇到某类任务时，应该按什么流程组合动作”。
+      </div>
+
+      <h2>1. 最小目录</h2>
+      <pre><code>skills/
+└── report-review/
+    ├── SKILL.md          # 必需：frontmatter + 指令
+    ├── scripts/           # 可选：可执行代码
+    ├── references/        # 可选：按需阅读的详细资料
+    └── assets/            # 可选：模板、schema、静态资源</code></pre>
+
+      <h2>2. SKILL.md 契约</h2>
+      <pre><code>---
+name: report-review
+description: 审查研究报告的来源、证据和结论。用户要求核验报告质量或引用时使用。
+---
+
+# report-review
+
+1. 找出每个关键结论。
+2. 对照来源和证据。
+3. 输出问题、证据和改进建议。</code></pre>
+      <ul>
+        <li><code>name</code> 必填：小写字母、数字和连字符，且与父目录名一致。</li>
+        <li><code>description</code> 必填：同时写“做什么”和“什么时候使用”；它是启动时的主要路由线索。</li>
+        <li>正文写 Agent 的执行剧本；过长内容拆到 <code>references/</code>。</li>
+      </ul>
+
+      <h2>3. 三层渐进式披露</h2>
+      <table>
+        <thead><tr><th>层级</th><th>内容</th><th>何时进入上下文</th></tr></thead>
+        <tbody>
+          <tr><td>1 Metadata</td><td><code>name</code>、<code>description</code>、路径</td><td>Agent 启动时，所有已配置 Skill 都发现</td></tr>
+          <tr><td>2 Instructions</td><td>完整 <code>SKILL.md</code> 正文</td><td>任务匹配 Skill 后，Agent 读取正文</td></tr>
+          <tr><td>3 Resources</td><td><code>scripts/</code>、<code>references/</code>、<code>assets/</code></td><td>正文引用且任务确实需要时，按需读取</td></tr>
+        </tbody>
+      </table>
+
+      <h2>4. 三种能力注入方式</h2>
+      <table>
+        <thead><tr><th>机制</th><th>适合放什么</th><th>典型问题</th></tr></thead>
+        <tbody>
+          <tr><td>Tool</td><td>搜索、读写文件、调用 API 等原子操作</td><td>Agent 要执行哪个动作？</td></tr>
+          <tr><td>Memory</td><td>每次对话都相关的规范、偏好、项目背景</td><td>所有任务都需要知道什么？</td></tr>
+          <tr><td>Skill</td><td>特定任务才需要的多步骤流程、知识和资源</td><td>遇到哪类任务时要按什么剧本做？</td></tr>
+        </tbody>
+      </table>
+
+      <h2>5. Backend 与优先级</h2>
+      <ul>
+        <li><code>FilesystemBackend</code>：本地目录；实验时使用 <code>virtual_mode=True</code>。</li>
+        <li><code>StateBackend</code>：文件放在当前 Agent state；调用时通过 <code>files</code> 注入，并用 <code>create_file_data()</code> 格式化。</li>
+        <li><code>StoreBackend</code>：通过 Store 跨 thread 持久化；生产场景要设计 namespace 隔离。</li>
+        <li><code>skills=["/skills/"]</code> 指向 Skill 父目录，不是某个单独的 <code>SKILL.md</code>。</li>
+        <li>同名 Skill 多源并存时，后列的 source 覆盖前列的 source（last wins）。</li>
+      </ul>
+
+      <div class="panel warning">
+        <strong>安全边界：</strong>能读取 Skill 文件，不等于能执行其中脚本；执行还需要合适的沙箱或解释器，以及明确的权限策略。共享 Skill 库通常应只读，个人 Skill 才考虑可写或审批写入。
+      </div>
+
+      <h2>主要资料</h2>
+      <ol>
+        <li><a href="https://docs.langchain.com/oss/python/deepagents/skills">LangChain 官方：Skills</a></li>
+        <li><a href="https://agentskills.io/specification">Agent Skills Specification</a></li>
+        <li><a href="https://datawhalechina.github.io/deepagents-in-action/chapters/ch07-skills/">课程第 7 章</a></li>
+      </ol>
+      <p class="footer">复习时先遮住表格右侧，用自己的话说出“什么时候加载什么”；如果某个词只会背定义，还没有真正用过，可以直接问老师。</p>
+    </main>
+  </body>
+</html>

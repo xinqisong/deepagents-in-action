@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>第一课：Skill 的渐进式披露</title>
+    <link rel="stylesheet" href="../../assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Task 07 · Lesson 01 · 约 10 分钟</p>
+      <h1>Skill 不是一个更大的 Tool</h1>
+      <p class="lead">本课只有一个目标：你能解释一个 Skill 为什么要拆成“元数据、指令、资源”三层，并能把一个需求放进 Skill、Memory 或 Tool 之一。</p>
+
+      <h2>从 task06 接过来的问题</h2>
+      <p>task06 让你看到：异步子 Agent 解决的是“长任务如何被启动和管理”。但后台研究 Agent 仍然需要知道“研究时先搜什么、如何核对来源、用什么格式交付”。如果每次都把这套流程写进用户提示词，流程就无法稳定复用；如果把所有细节永久塞进系统提示词，又会浪费上下文。</p>
+
+      <h2>Skill 的三层模型</h2>
+      <pre><code>Agent 启动
+  └─ Level 1：name + description
+       “我有哪些能力？什么时候可能用到？”
+
+任务匹配
+  └─ Level 2：读取 SKILL.md 正文
+       “这类任务具体按什么步骤做？”
+
+执行需要
+  └─ Level 3：读取 references / assets / scripts
+       “这一步需要哪份细节、模板或代码？”</code></pre>
+
+      <div class="panel">
+        <strong>关键洞察：</strong>渐进式披露不是把文件分层存放这么简单，而是把“发现能力”和“消耗详细上下文”分开。启动时只让 Agent 看摘要；真正匹配后才读取剧本；执行遇到需要时才加载资源。
+      </div>
+
+      <h2>和 Tool、Memory 怎么分</h2>
+      <table>
+        <thead><tr><th>如果你要表达的是……</th><th>优先考虑</th></tr></thead>
+        <tbody>
+          <tr><td>“搜索一次”“读一个文件”“调用一次 API”</td><td>Tool</td></tr>
+          <tr><td>“每次对话都必须遵守的项目规范”</td><td>Memory</td></tr>
+          <tr><td>“遇到报告核验时，按三步检查并使用模板”</td><td>Skill</td></tr>
+        </tbody>
+      </table>
+
+      <h2>现在请先回忆，不要查资料</h2>
+      <ol>
+        <li>如果启动时有 30 个 Skill，为什么不把 30 份正文全部放进系统提示词？</li>
+        <li>用户说“帮我按团队规范审查这份 PR”，Agent 最早需要看到 Skill 的哪一部分？之后还要读取哪一部分？</li>
+        <li>“调用 GitHub API 获取 PR diff”与“审查 PR 时先看 diff、再检查测试、最后按模板输出”分别更像 Tool 还是 Skill？为什么？</li>
+      </ol>
+      <p>请直接在聊天里回答，尽量不用原词堆砌。你的回答会决定下一课是先做目录实验，还是先补一块概念。</p>
+
+      <details>
+        <summary>参考答案（答完再打开）</summary>
+        <ol>
+          <li>因为大部分 Skill 与当前任务无关；只加载元数据能减少启动上下文，匹配后再加载正文。</li>
+          <li>先看 <code>name</code> 和 <code>description</code> 做发现/匹配；匹配后读取 <code>SKILL.md</code> 正文，再按需读取 references、assets 或 scripts。</li>
+          <li>调用 GitHub API 是 Tool；“审查时如何组合多个动作并按规范交付”是 Skill。Skill 不替代 Tool，而是指导 Tool 的组合。</li>
+        </ol>
+      </details>
+
+      <h2>完成标准</h2>
+      <ul>
+        <li>不用看资料，能说出三层分别解决“发现、执行、细节”中的哪一个问题。</li>
+        <li>能给出一个真实例子，说明 Skill 如何编排多个 Tool。</li>
+        <li>能指出“把所有团队规范都做成 Skill”也不合理：始终相关的内容更适合 Memory。</li>
+      </ul>
+
+      <p class="footer">下一步：先完成上面的三道回忆题，再打开 <a href="../reference/skills-reference.html">Skills 速查页</a>。本课的主要资料是 <a href="https://docs.langchain.com/oss/python/deepagents/skills">LangChain 官方 Skills 文档</a> 和 <a href="https://agentskills.io/specification">Agent Skills Specification</a>。任何不清楚的词都可以直接问老师。</p>
+    </main>
+  </body>
+</html>
