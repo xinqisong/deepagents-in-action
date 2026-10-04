@@ -1,0 +1,11 @@
+[project]
+name = "task07"
+version = "0.1.0"
+description = "DeepAgents chapter 8 long-term memory experiments"
+requires-python = ">=3.12"
+dependencies = [
+    "deepagents>=0.7.20,<0.8",
+    "langchain-openai>=1.6.2,<2",
+    "langgraph>=1.2,<2",
+    "python-dotenv>=1.2.3,<2",
+]

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>长期记忆速查页</title>
+    <link rel="stylesheet" href="../../task06/assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Task 07 · Reference</p>
+      <h1>长期记忆与 CompositeBackend</h1>
+      <p class="lead">用作用域、存储和路径三件事定位问题。</p>
+
+      <h2>最小词汇表</h2>
+      <table>
+        <thead><tr><th>概念</th><th>一句话</th><th>典型边界</th></tr></thead>
+        <tbody>
+          <tr><td>thread</td><td>一次可持续恢复的对话执行上下文</td><td>由 <code>thread_id</code> 标识</td></tr>
+          <tr><td>Checkpointer</td><td>保存 thread 内的 Agent state</td><td>换 thread 默认不共享</td></tr>
+          <tr><td>Store</td><td>保存可跨 thread 读取的数据</td><td>由 namespace 隔离</td></tr>
+          <tr><td>namespace</td><td>Store 中的逻辑隔离边界</td><td>常包含 user_id / assistant_id / org_id</td></tr>
+          <tr><td>CompositeBackend</td><td>按虚拟路径把文件操作分发给不同 Backend</td><td><code>/memories/</code> 可走 StoreBackend</td></tr>
+          <tr><td><code>memory=</code></td><td>指定启动时要加载的已有记忆文件</td><td>不等于自动保证写入</td></tr>
+        </tbody>
+      </table>
+
+      <h2>路径与 Store key</h2>
+      <pre><code>Agent 可见路径：/memories/preferences.md
+路由前缀：      /memories/
+Store 中的 key： /preferences.md
+namespace：      (user_id, "memories")</code></pre>
+
+      <div class="panel warning">
+        <strong>常见误判：</strong>同一个 key 只在同一个 namespace 内代表同一份数据；同名不代表共享。写入前要检查旧 item，避免第一次初始化代码覆盖已有偏好。
+      </div>
+
+      <h2>作用域选择</h2>
+      <table>
+        <thead><tr><th>信息</th><th>推荐边界</th><th>安全取舍</th></tr></thead>
+        <tbody>
+          <tr><td>用户偏好</td><td><code>(user_id, "memories")</code></td><td>用户可请求更新，仍应检查写入结果</td></tr>
+          <tr><td>Agent 知识</td><td><code>(assistant_id, "memories")</code></td><td>共享给多个用户，需防止任意用户注入</td></tr>
+          <tr><td>组织策略</td><td><code>(org_id, "policies")</code></td><td>应用代码写入，Agent 通常只读</td></tr>
+        </tbody>
+      </table>
+
+      <h2>排障顺序</h2>
+      <ol>
+        <li>我观察的是哪个来源：Store item、Agent state、run 还是 trace？</li>
+        <li>当前使用的是哪个 <code>thread_id</code> 和 namespace？</li>
+        <li>Agent 可见路径与 Store key 是否多了一层路由前缀？</li>
+        <li>是“模型回复成功”，还是“持久化写入成功”？</li>
+        <li>是本地 <code>InMemoryStore</code> 重启丢失，还是持久化 Store 真正读不到？</li>
+      </ol>
+
+      <p class="footer">回到 <a href="../lessons/0001-memory-boundaries.html">第一课</a> 或 <a href="../learning.md">学习计划</a>。主资料：<a href="https://docs.langchain.com/oss/python/deepagents/memory">官方 Memory 文档</a>。</p>
+    </main>
+  </body>
+</html>

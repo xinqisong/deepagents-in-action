@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>第一课：短期记忆与长期记忆</title>
+    <link rel="stylesheet" href="../../task06/assets/reference.css" />
+  </head>
+  <body>
+    <main>
+      <p class="kicker">Task 07 · Lesson 01 · 约 10 分钟</p>
+      <h1>先把“记忆”拆成两个问题</h1>
+      <p class="lead">本课唯一目标：你能判断一条信息应该放进 Checkpointer，还是放进 Store。</p>
+
+      <h2>两个问题</h2>
+      <p>第一问是“这次对话接着上一步继续吗？”这是 <code>thread_id</code> 和 Checkpointer 解决的 thread-scoped 短期状态。</p>
+      <p>第二问是“换一个对话后，还应该保留这条信息吗？”这是 Store 解决的 cross-thread 长期数据；namespace 决定哪些用户、Agent 或组织能看到它。</p>
+
+      <pre><code>同一 thread
+    └─ Checkpointer ──► 消息、当前状态、临时工作
+
+新 thread / 新会话
+    └─ Store + namespace ──► 偏好、项目知识、研究记忆</code></pre>
+
+      <div class="panel">
+        <strong>先记住这个边界：</strong>模型说“我记住了”只是回答。真正的写入证据应该来自 Store 中的 item，或 tracing 中成功的文件工具调用。
+      </div>
+
+      <h2>先回忆，再看答案</h2>
+      <ol>
+        <li>同一个用户换了 <code>thread_id</code>，仍想保留“中文注释”的偏好，你会增加什么组件？</li>
+        <li>两个用户都使用 <code>/preferences.md</code>，如何避免读到彼此的内容？</li>
+        <li>如果一个组织策略不应被 Agent 改写，应该只依靠提示词吗？</li>
+      </ol>
+      <details>
+        <summary>参考答案</summary>
+        <p>使用跨 thread 的 Store；用包含用户身份的 namespace 隔离同名 key；不能只依靠提示词，还需要只读路由、权限规则或由应用代码写入并审计。</p>
+      </details>
+
+      <h2>本课完成标准</h2>
+      <ul>
+        <li>能说出 Checkpointer 和 Store 各自的生命周期。</li>
+        <li>能解释为什么 <code>thread_id</code> 不能替代 namespace。</li>
+        <li>能运行 <a href="../experiment/01-checkpointer/checkpointer_demo.py">实验 1</a> 和 <a href="../experiment/02-store/store_demo.py">实验 2</a>，并把观察写入记录。</li>
+      </ul>
+
+      <p class="footer">下一步：打开 <a href="../reference/long-term-memory-reference.html">速查页</a>，再按 <a href="../learning.md">学习计划</a> 的 Session 1 开始。遇到任何不清楚的词或运行现象，直接问老师。</p>
+      <p>推荐主资料：<a href="https://docs.langchain.com/oss/python/deepagents/memory">LangChain 官方 Deep Agents Memory 文档</a>。</p>
+    </main>
+  </body>
+</html>
