@@ -1,6 +1,6 @@
-# Task 07：长期记忆与 CompositeBackend
+# Task 07：长期记忆与 Human-in-the-Loop
 
-本目录对应课程第 8 章“长期记忆——让 Agent 拥有跨对话的记忆”。学习目标不是背 API，而是亲眼区分：
+本目录包含课程第 8 章“长期记忆——让 Agent 拥有跨对话的记忆”和第 9 章“Human-in-the-Loop”。第 8 章的学习目标不是背 API，而是亲眼区分：
 
 - `Checkpointer`：同一个 `thread_id` 内的短期状态；
 - `Store`：跨线程、按 namespace 隔离的长期数据；
@@ -14,35 +14,23 @@
 
 <https://docs.langchain.com/oss/python/deepagents/memory>
 
+## 当前进度
+
+| 章节 | 学习内容 | 状态 |
+| --- | --- | --- |
+| [第 8 章：长期记忆](learning.md) | Checkpointer、Store、namespace、CompositeBackend 与跨对话读写 | 已完成本地实验与知识总结 |
+| [第 9 章：Human-in-the-Loop](ch09-human-in-the-loop/learning.md) | 工具审批、暂停恢复、批量决策、节点重放与幂等；条件审批、并行中断 ID 和子 Agent 审批 | 核心审批流程已验证；后三项由教师演示通过，自定义 Middleware、文件权限、输入验证和异常传播待实践 |
+
 ## 当前分支
 
-本章实验分支是 `learning/task07`。Git 不允许使用带空格的 `learning task07` 作为分支名，因此采用了等价的层级命名。
+这两章的实验保存在 `learning/task07` 分支。
 
-## 文件说明
+## 文件入口
 
-```text
-task07/
-├── README.md
-├── MISSION.md
-├── RESOURCES.md
-├── NOTES.md
-├── learning.md                         # 分阶段学习计划与验收标准
-├── pyproject.toml                      # 本章独立依赖声明
-├── experiment/
-│   ├── README.md
-│   ├── observations.md                 # 每次实验的观察记录模板
-│   ├── 01-checkpointer/                # thread-scoped 短期记忆
-│   ├── 02-store/                       # cross-thread 长期存储与 namespace
-│   └── 03-composite-backend/           # 下一步：路径路由与 Deep Agent
-├── lessons/
-│   └── 0001-memory-boundaries.html    # 第一课：先分清两种记忆
-├── reference/
-│   └── long-term-memory-reference.html
-└── learning-records/
-    └── README.md                       # 完成实验后再写正式学习记录
-```
+- 第 8 章：[学习计划](learning.md)、[实验](experiment/README.md)、[知识总结](reference/long-term-memory-summary.md)、[学习记录](learning-records/README.md)
+- 第 9 章：[学习计划与课程入口](ch09-human-in-the-loop/learning.md)、[边界速查](ch09-human-in-the-loop/reference/hitl-boundaries.html)、[资源与版本记录](ch09-human-in-the-loop/RESOURCES.md)
 
-## 从这里开始
+## 第 8 章实验入口
 
 先读 [第一课](lessons/0001-memory-boundaries.html)，然后运行两个不需要模型密钥的基础实验：
 
@@ -53,6 +41,10 @@ uv run python experiment/01-checkpointer/checkpointer_demo.py
 uv run python experiment/02-store/store_demo.py
 ```
 
-把输出和自己的解释写进 [观察记录](experiment/observations.md)。完成后再进入 `learning.md` 的 Session 2，配置模型并实验 `CompositeBackend`。
+本章的实验与学习记录已完成；上述命令可用于重新观察 Checkpointer 与 Store 的边界。
+
+## 第 9 章实验入口
+
+从[第 9 章学习计划](ch09-human-in-the-loop/learning.md)进入课程。已验证的核心演示是[模拟发布审批](ch09-human-in-the-loop/experiment/05-capstone/capstone_exercise.py)；条件审批、并行中断 ID 和子 Agent 审批的独立演示也列在该计划中。
 
 不要把真实 `.env`、数据库 URI 或 LangSmith 密钥提交到仓库。
