@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第二课：批准原参数执行</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0001-request-vs-execution.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 02 · 5 分钟</p>
+  <h1>把人工决定交给工作流</h1>
+  <p class="lead">本课只练习批准原请求，并预测工具执行后留下的证据。</p>
+  <h2>先认识四种选择</h2>
+  <table>
+    <thead><tr><th>决定</th><th>含义</th></tr></thead>
+    <tbody>
+      <tr><td>approve</td><td>按原参数执行工具</td></tr>
+      <tr><td>edit</td><td>修改参数后执行工具</td></tr>
+      <tr><td>reject</td><td>跳过此次调用，把拒绝反馈交给模型</td></tr>
+      <tr><td>respond</td><td>人直接提供工具结果，适合 ask_user 这类工具</td></tr>
+    </tbody>
+  </table>
+  <p>选择受 <code>allowed_decisions</code> 限制。上一课的工具只允许 approve 和 reject；要练 edit，后续会先调整配置。respond 的内容被作为成功工具结果，不能拿它来表达拒绝写入。依据：<a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain 官方 HITL</a>。</p>
+  <h2>本轮只补一个字段</h2>
+  <p>继续上一课的请求：将 language 改为 English。假设你检查后同意原样执行，补全下面的 <code>type</code>。</p>
+  <pre><code># 接在已有 agent、config 和暂停结果之后，不是独立脚本
+from langgraph.types import Command
+
+decision = {"type": "_____"}
+result = agent.invoke(
+    Command(resume={"decisions": [decision]}),
+    config=config,  # 使用发起时的同一线程配置
+    version="v2",
+)</code></pre>
+  <p><code>Command(resume=...)</code> 把决定交回暂停的工作流。完整恢复机制留到第三节，这次只关注决定的含义。<a href="https://docs.langchain.com/oss/python/langgraph/interrupts">恢复机制来源</a></p>
+  <h2>预测可观察结果</h2>
+  <p>模拟工具体如下；本轮假设只执行这一次调用，没有重试或新增调用：</p>
+  <pre><code>def update_preference(key, value):
+    executed_calls.append({"key": key, "value": value})
+    return "updated"</code></pre>
+  <p>执行前 <code>executed_calls == []</code>。批准并成功执行后，里面应出现什么？这份列表只证明模拟工具体被执行，不代表已经写入真实 Store。</p>
+  <details>
+    <summary>先作答，再查看对照</summary>
+    <p>type 填 approve。列表应为 <code>[{"key": "language", "value": "English"}]</code>。批准沿用原参数；实际执行记录比模型说“完成”更能说明工具运行了。若要证明真实持久化，还应检查目标 Store。</p>
+  </details>
+  <p class="footer">把 type 与预期列表发到对话中，我会反馈，再进入 <a href="0003-reject-with-feedback.html">第三课：拒绝反馈</a>。任何不清楚的地方都可以直接追问。</p>
+</main></body>
+</html>

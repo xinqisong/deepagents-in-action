@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HITL 边界速查</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <p class="kicker">Chapter 09 · Reference</p>
+  <h1>审批时要分清的边界</h1>
+  <p class="lead">按需查阅；第一课只需要前两行。</p>
+  <table>
+    <thead><tr><th>术语</th><th>含义</th><th>检查什么</th></tr></thead>
+    <tbody>
+      <tr><td>工具请求</td><td>模型提出的工具名和参数</td><td>请求内容，不能据此断言副作用已发生</td></tr>
+      <tr><td>审批中断</td><td>工作流暂停，等待决定</td><td>待处理中断、实际执行记录</td></tr>
+      <tr><td>Checkpointer</td><td>保存恢复所需的线程状态</td><td>恢复时仍能访问对应 checkpoint</td></tr>
+      <tr><td>thread_id</td><td>定位要继续的线程</td><td>发起与恢复使用相同值</td></tr>
+      <tr><td>resume</td><td>把人工决定交回工作流</td><td>恢复后可能还有新的中断</td></tr>
+      <tr><td>节点重放</td><td>恢复时从中断节点开头重新执行</td><td>中断前的副作用能否安全重复</td></tr>
+    </tbody>
+  </table>
+  <p>依据：<a href="https://docs.langchain.com/oss/python/langgraph/interrupts">LangGraph Interrupts</a>。内存 Checkpointer 随进程结束而丢失；跨进程继续需要持久化保存并重新访问相同线程数据。</p>
+  <h2>工具审批的四种决定</h2>
+  <table>
+    <thead><tr><th>决定</th><th>这一调用如何处理</th></tr></thead>
+    <tbody>
+      <tr><td>approve</td><td>按原参数执行</td></tr>
+      <tr><td>edit</td><td>修改参数后执行</td></tr>
+      <tr><td>reject</td><td>跳过调用，把拒绝反馈交给模型</td></tr>
+      <tr><td>respond</td><td>跳过调用，用人的回答作为成功的工具结果；用于 ask_user 一类工具</td></tr>
+    </tbody>
+  </table>
+  <p>以配置中的 <code>allowed_decisions</code> 为准。拒绝副作用工具应使用 <code>reject</code>。依据：<a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain HITL</a>。</p>
+  <p class="footer"><a href="../lessons/0001-request-vs-execution.html">返回第一课</a> · <a href="../learning.md">全章计划</a></p>
+</main></body>
+</html>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第一课：请求不等于执行</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+  <script src="../assets/quiz.js" defer></script>
+</head>
+<body>
+<main>
+  <nav><a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">边界速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 01 · 5 分钟</p>
+  <h1>工具请求是否已经执行？</h1>
+  <p class="lead">接上你上一章提出的“敏感变更需要审批”：这次只练习判断，操作停在哪一步。</p>
+  <h2>先看一个边界</h2>
+  <p>模型生成工具名与参数，是提出执行请求。为该工具配置人工审批后，系统可以在调用工具函数前暂停，把请求交给人检查。看到模型的工具请求，还不足以证明写入已经发生。<a href="https://docs.langchain.com/oss/python/deepagents/human-in-the-loop">官方说明</a></p>
+  <div class="panel">模型提出请求 → 审批暂停 → 人工决定 → 获准后执行工具</div>
+  <p>你已知道如何检查 Store 的实际内容；这章沿用相同的证据习惯：同时观察请求和真实执行记录。</p>
+  <h2>你来判断</h2>
+  <p>假设这是一个全新线程，只有下面这一项工具请求。工具每次真正进入函数体，都会向 <code>executed_calls</code> 追加记录。</p>
+  <pre><code># 配置片段，不是完整运行程序
+interrupt_on = {
+    "update_preference": {
+        "allowed_decisions": ["approve", "reject"]
+    }
+}
+
+# 模型提出的请求
+update_preference(key="language", value="English")
+
+# 当前观察
+存在待处理的审批中断
+executed_calls == []
+尚未提交任何人工决定</code></pre>
+  <form data-quiz>
+    <fieldset>
+      <legend>这一次 update_preference 调用处于什么状态？</legend>
+      <label><input type="radio" name="execution" value="executed" data-feedback="再想一步：模型提出了请求，但审批还未完成，执行记录也为空。请求本身不能证明工具已经运行。"> A. 调用已经执行</label>
+      <label><input type="radio" name="execution" value="pending" data-feedback="判断正确：这次调用暂停等待审批，尚未进入工具函数。请再用自己的话解释，为什么它也不等于已经被拒绝。"> B. 调用尚未执行</label>
+      <label><input type="radio" name="execution" value="rejected" data-feedback="暂停还不是拒绝：这里尚未提交人工决定。拒绝是后面明确选择 reject 才会发生的分支。"> C. 调用已经拒绝</label>
+      <button type="submit">检查判断</button>
+      <p class="feedback" role="status" aria-live="polite"></p>
+    </fieldset>
+  </form>
+  <noscript><p>脚本未启用，可以直接把答案发到对话中获得反馈。</p></noscript>
+  <h2>完成本课</h2>
+  <p>回到对话，给出一个选项和一句理由。再说明如果后续批准，应检查什么来确认它确实执行。答对后才进入第二课的 decision 练习。</p>
+  <p>推荐主资料：<a href="https://docs.langchain.com/oss/python/deepagents/human-in-the-loop">Deep Agents 官方 HITL 文档</a>，本次只读基础配置和处理中断两个小节。</p>
+  <p class="footer">任何词、代码或判断不清楚，都可以直接问我。接着进入 <a href="0002-approve-tool-call.html">第二课：批准原参数执行</a>；也可回看 <a href="../reference/hitl-boundaries.html">边界速查</a>。</p>
+</main>
+</body>
+</html>

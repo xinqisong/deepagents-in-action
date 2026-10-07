@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第六课：实际暂停与恢复</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0005-respond-as-tool-result.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 06 · 10 分钟</p>
+  <h1>把决定交回暂停的 Agent</h1>
+  <p class="lead">只补一处数据，观察真实审批流程的前后变化。</p>
+  <h2>恢复调用接收什么</h2>
+  <pre><code>Command(resume={"decisions": decisions})</code></pre>
+  <p>工具审批的恢复数据中，decisions 是一个列表，每项是一个决定。本轮只有一个待审批动作，因此列表只需放入一个 decision。恢复使用发起时的同一 thread_id，并继续访问保存了状态的 Checkpointer。依据：<a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain 官方 HITL</a>。</p>
+  <h2>填写一个缺口</h2>
+  <p>打开 <a href="../experiment/01-resume/resume_exercise.py">resume_exercise.py</a>，只修改 main() 中的 decisions：</p>
+  <pre><code>decision = {"type": "approve"}
+decisions = None  # 替换成一个列表，里面包含 decision</code></pre>
+  <p>语法提示：<code>[x]</code> 表示把变量 x 的值放进一个只有一项的列表。这里要放入的是已有的 decision 字典，不是字符串“decision”。</p>
+  <h2>运行与观察</h2>
+  <p>在仓库根目录执行：</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/01-resume/resume_exercise.py</code></pre>
+  <p>脚本每次运行都会从头创建练习。填写后，一次运行内完成暂停和恢复；InMemorySaver 不会在脚本退出后保留 checkpoint。未填写时只展示暂停结果然后退出。</p>
+  <p>本练习已接入真实模型，自动读取 task07/.env 中的 MODEL_NAME、SILICONFLOW_API_KEY 与 SILICONFLOW_API_BASE；变量名沿用上一章，服务商由地址决定。工具只写内存执行记录，不写真实偏好。底层辅助代码本次无需修改。</p>
+  <p>DeepSeek 接口在本练习中使用非思考模式，避免引入思考内容的回传处理；见 <a href="https://api-docs.deepseek.com/guides/thinking_mode/">DeepSeek 官方模式说明</a>。本课仍关闭 tracing，仅查看终端中的运行证据。</p>
+  <p>真实模型不保证每次都提出同样的调用。如果没有中断，或恢复后又出现中断，把实际输出发到对话中一起检查，不把一次 invoke 返回当作任务已经完成。</p>
+  <p>请把输出中的“恢复后，中断数量”和“恢复后，执行记录”发到对话。我们据此判断是否执行，再解释状态恢复机制。</p>
+  <p class="footer">教师已经验证实验可用，但这不代表你已完成。遇到列表语法或运行问题，直接发来疑问或报错。</p>
+</main></body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第五课：人直接提供工具结果</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0004-edit-tool-arguments.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 05 · 3 分钟</p>
+  <h1>人直接提供工具结果</h1>
+  <p class="lead">本课只区分 respond 与 reject。</p>
+  <h2>两者都可以跳过工具，但含义不同</h2>
+  <p><code>reject</code> 表达“不执行这次请求”，并把拒绝反馈交给 Agent。<code>respond</code> 则由人直接提供结果：工具函数不执行，人的 message 作为成功的工具结果交给 Agent。它适合 <code>ask_user</code> 这类专门询问人的工具，不能用来表达拒绝发送、删除等操作。依据：<a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain 官方 HITL 文档</a>。</p>
+  <h2>一个例子</h2>
+  <p>假设 Agent 调用 <code>ask_user(question="报告标题是什么？")</code>，人可以直接提供标题：</p>
+  <pre><code>decision = {
+    "type": "respond",
+    "message": "项目进度报告"
+}</code></pre>
+  <p>这里的 message 是问题的答案。创建 Agent 时需要为 ask_user 开放 respond，例如 <code>{"allowed_decisions": ["respond"]}</code>。这是独立的人工输入工具配置，不沿用上一课 update_preference 的决策列表。</p>
+  <h2>你来判断</h2>
+  <p>现在 Agent 调用 <code>ask_user(question="报告按月还是按季度汇总？")</code>。用户回答“按季度”。应使用 respond 还是 reject？请在对话中给出选择，并用一句话解释。</p>
+  <details>
+    <summary>作答后再自查</summary>
+    <p>使用 respond，message 为“按季度”。用户是在回答问题，没有拒绝任务；人的答案就是工具结果。</p>
+  </details>
+  <p class="footer">完成后进入 <a href="0006-resume-one-call.html">第六课：实际暂停与恢复</a>。任何术语或代码不清楚，都可以直接问我。</p>
+</main></body>
+</html>

@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第九课：让副作用经得起重放</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0008-interrupt-node-replay.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 09 · 5 分钟</p>
+  <h1>放在审批之后，也要处理重放</h1>
+  <p class="lead">同一个节点内再次暂停并恢复时，节点仍从头运行。第一次审批后做过的写入可能再次发生。</p>
+  <p>打开 <a href="../experiment/04-idempotence/idempotence_exercise.py">idempotence_exercise.py</a>。节点有两个 <code>interrupt()</code>：先审批，再确认模拟操作完成。两次恢复都传入 <code>True</code>。审批后有两种内存写法：往列表 <code>append</code>，以及用固定 <code>operation_id</code> 写入字典。</p>
+  <h2>先预测，再运行</h2>
+  <p>第二次恢复后，列表会有几项？字典会有几个键？</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/04-idempotence/idempotence_exercise.py</code></pre>
+  <p>字典按同一个操作 ID 覆盖，展示了幂等操作的基本想法。它只在当前进程的内存中演示；真实数据库需要持久的唯一键，并让去重检查与写入处于同一个事务中。外部邮件等操作则需要接收方支持幂等键，或另外设计可核对的去重流程。</p>
+  <p>请把完成后的两种记录发到对话。我们再讨论为什么“审批通过”与“恰好执行一次”是两个不同的问题。</p>
+</main></body>
+</html>

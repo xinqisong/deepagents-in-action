@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第三课：拒绝反馈</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0002-approve-tool-call.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 03 · 3 分钟</p>
+  <h1>拒绝后，让 Agent 知道下一步</h1>
+  <p class="lead">本课只练一件事：为 reject 写清楚反馈。</p>
+  <h2>你已经判断出的结果</h2>
+  <p>跳过工具调用，就不会执行工具体里的 append。因此，原本为空的执行记录保持 <code>[]</code>：这是包含零个元素的 Python 列表。</p>
+  <h2>拒绝之后还会继续</h2>
+  <p><code>reject</code> 跳过这次工具调用，并把反馈交给模型；它不意味着终止整个 Agent 任务。用 <code>message</code> 告诉模型为什么拒绝、接下来应该做什么，可以让它调整后续行动。反馈本身不是永久禁用工具的权限规则。依据：<a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain 官方 HITL 文档</a>。</p>
+  <h2>只写一句反馈</h2>
+  <p>Agent 请求把语言偏好改成 English，但你希望继续使用中文，也没有要求它更改偏好。本轮希望它保留原偏好，继续原来的任务。</p>
+  <pre><code>decision = {
+    "type": "reject",
+    "message": "_____"
+}</code></pre>
+  <p>请用一句中文填写 message：包含拒绝原因和下一步。无需运行代码，直接在对话里回答。</p>
+  <details>
+    <summary>写完后再自查</summary>
+    <p>是否说明不允许这次改成 English？是否表达继续保留中文偏好？是否说明继续原任务，而不是重试这次修改？措辞不要求一致，表达清楚即可。</p>
+  </details>
+  <p class="footer">把你的句子发给我，我会检查是否能指导 Agent 的下一步。接着进入 <a href="0004-edit-tool-arguments.html">第四课：修改参数后执行</a>。任何不清楚的地方都可以直接追问。</p>
+</main></body>
+</html>

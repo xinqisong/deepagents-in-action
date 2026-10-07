@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第八课：恢复时节点重放</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0007-two-actions-one-batch.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 08 · 5 分钟</p>
+  <h1>恢复时，节点从头运行</h1>
+  <p class="lead"><code>Command(resume=...)</code> 把值交回 <code>interrupt()</code>，但执行会从节点的开头重新开始。</p>
+  <p>这意味着 <code>interrupt()</code> 前面的代码在首次暂停和恢复时各执行一次。若它写入数据库或发送消息，就可能重复；实验只往内存列表追加文字。依据：<a href="https://docs.langchain.com/oss/python/langgraph/interrupts">LangGraph Interrupts 文档</a>。</p>
+  <h2>先预测，再运行</h2>
+  <p>打开 <a href="../experiment/03-replay/replay_exercise.py">replay_exercise.py</a>。节点先追加“进入审批节点”，再调用 <code>interrupt()</code>；恢复时传入 <code>True</code>。运行结束后，“进入审批节点”会在事件列表中出现几次？“审批后执行模拟操作”会出现几次？</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/03-replay/replay_exercise.py</code></pre>
+  <p>这一步不需要修改代码，也不调用模型：要观察的是 LangGraph 自己的重放规则。请把两次打印的事件列表发到对话，我们再讨论副作用应放在哪里，以及为什么位置调整仍不能保证所有故障下恰好执行一次。</p>
+</main></body>
+</html>

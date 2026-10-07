@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第七课：同批两个审批动作</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0006-resume-one-call.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 07 · 10 分钟</p>
+  <h1>一次暂停，逐个决定</h1>
+  <p class="lead">一个中断可以包含多个待审批动作。先读实际顺序，再为每个动作给一个决定。</p>
+  <h2>要看哪里</h2>
+  <p>暂停值中的 <code>action_requests</code> 是本批待审批动作。<code>decisions</code> 必须与它数量相同、位置一一对应；<code>decisions[0]</code> 处理 <code>action_requests[0]</code>。每个动作能选什么，以对应的 <code>review_configs</code> 为准。依据：<a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain HITL 文档</a>。</p>
+  <h2>先预测</h2>
+  <p>如果动作 0 是保存语言、动作 1 是保存主题，我们批准语言、拒绝主题，恢复后模拟执行记录应包含哪一项？如果模型把两个动作的顺序交换，<code>decisions</code> 应怎样调整？</p>
+  <h2>填写一个缺口</h2>
+  <p>运行 <a href="../experiment/02-batch/batch_exercise.py">batch_exercise.py</a>。它会先打印模型本轮提出的动作。确认同批有两个动作后，只填写 <code>main()</code> 中的 <code>decisions = None</code>：语言用 <code>approve</code>，主题用 <code>reject</code>，拒绝理由可写“保持原主题”。按照终端打印的实际顺序排列两个字典。</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/02-batch/batch_exercise.py</code></pre>
+  <p>每次运行都会新建内存 Checkpointer。真实模型可能没有在同一轮提出两个调用；脚本会停在观察步骤，此时把实际输出发到对话中，不要猜测动作顺序。</p>
+  <p>请发回动作顺序、填写的 <code>decisions</code> 和恢复后的执行记录。工具只写内存列表，不保存真实偏好。</p>
+</main></body>
+</html>

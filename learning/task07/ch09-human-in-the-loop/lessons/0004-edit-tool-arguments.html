@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第四课：修改参数后执行</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0003-reject-with-feedback.html">上一课</a> · <a href="../learning.md">全章计划</a> · <a href="../reference/hitl-boundaries.html">速查</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 04 · 5 分钟</p>
+  <h1>同意执行，但先改参数</h1>
+  <p class="lead">本课只练习填写 edit 中的一个参数。</p>
+  <h2>接上拒绝反馈</h2>
+  <p>如果不知道拒绝原因，可以把“请询问用户原因”作为下一步。上一题已知道用户要保留中文，因此可以直接反馈：“用户希望保留中文，拒绝改成 English；不要重试这次修改，请继续原来的任务。”</p>
+  <h2>换一个需求</h2>
+  <p>这次用户确实要求保存语言偏好，目标是中文。Agent 提出的 value 却是 English。用户同意执行，但需要先纠正这个值：使用 <code>edit</code>，工具会收到修改后的参数。依据：<a href="https://docs.langchain.com/oss/python/langchain/human-in-the-loop">LangChain 官方 HITL 的 edit 决策</a>。</p>
+  <p>先在创建 Agent 时开放 edit，再发起这轮新的练习：</p>
+  <pre><code>interrupt_on = {
+    "update_preference": {
+        "allowed_decisions": ["approve", "edit", "reject"]
+    }
+}</code></pre>
+  <p>这是新的配置示意，不表示上一轮已经暂停的任务会自动获得 edit 选项。</p>
+  <h2>只补一个值</h2>
+  <pre><code>decision = {
+    "type": "edit",
+    "edited_action": {
+        "name": "update_preference",
+        "args": {
+            "key": "language",
+            "value": "_____"
+        }
+    }
+}</code></pre>
+  <p><code>name</code> 指定工具，<code>args</code> 包含执行时要传入的参数。这里 key 的值是 language，表示修改语言偏好；只需要填 value，表示偏好的语言是什么。本例模拟工具接受中文字符串，不要求语言代码。</p>
+  <p>注意 edit 决策中的字段写作 <code>edited_action.args</code>。请保留其他参数，只填写目标语言。</p>
+  <details>
+    <summary>作答后再自查</summary>
+    <p>填“中文”。edit 表达的是同意按修改后的参数执行；后续仍要检查工具执行结果。</p>
+  </details>
+  <p class="footer">在对话里发来空白处的值，我会反馈。下一步：<a href="0005-respond-as-tool-result.html">第五课：人直接提供工具结果</a>。数据结构或术语不清楚时，随时问我。</p>
+</main></body>
+</html>

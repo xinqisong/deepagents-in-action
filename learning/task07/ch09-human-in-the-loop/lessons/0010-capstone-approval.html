@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第十课：综合审批练习</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0009-idempotent-side-effects.html">上一课</a> · <a href="../learning.md">全章计划</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 10 · 综合练习</p>
+  <h1>为模拟发布加一道审批</h1>
+  <p class="lead">公开发布属于敏感操作。你来配置工具审批，再分别验证批准与拒绝的执行证据。</p>
+  <p>打开 <a href="../experiment/05-capstone/capstone_exercise.py">capstone_exercise.py</a> 查看已填写的 <code>approval_policy</code>：键是工具名 <code>publish_draft</code>，值用 <code>allowed_decisions</code> 限制为 <code>approve</code>、<code>reject</code>。脚本读取已有的 task07/.env 使用真实模型；工具只写内存列表，不实际发布。</p>
+  <p>先预测：首次暂停后发布记录应该有什么？批准与拒绝各自恢复后应该有什么？</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/05-capstone/capstone_exercise.py approve
+learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/05-capstone/capstone_exercise.py reject</code></pre>
+  <p>两次命令各自新建一个练习实例。若真实模型没有提出预期调用，脚本会显示实际状态并停止；按实际输出判断。请发回你填写的策略、两次运行的中断数量和模拟发布记录。</p>
+  <p>通过标准：审批前没有执行；批准后只记录一次发布；拒绝后记录仍为空。你还应能解释恢复为何要使用同一 thread_id 与 Checkpointer，以及为什么真正的发布操作需要稳定的操作 ID 或接收方去重支持。</p>
+</main></body>
+</html>
