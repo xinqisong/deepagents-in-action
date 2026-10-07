@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第十一课：条件审批</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0010-capstone-approval.html">上一课</a> · <a href="../learning.md">全章计划</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 11</p>
+  <h1>同一个工具，只拦截危险参数</h1>
+  <p><code>interrupt_on</code> 的 <code>when</code> 函数读取工具调用参数。返回 <code>True</code> 时进入审批；返回 <code>False</code> 时此次调用直接执行。此处草稿保存为 <code>private</code> 可直接进行，保存为 <code>public</code> 则要审批。依据：<a href="https://docs.langchain.com/oss/python/deepagents/human-in-the-loop">Deep Agents HITL</a>。</p>
+  <p>运行 <a href="../experiment/06-when/when_demo.py">when_demo.py</a>：</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/06-when/when_demo.py</code></pre>
+  <p>检查两种参数下的中断数量和模拟保存记录。脚本调用已有真实模型配置，工具只记录到内存。</p>
+</main></body>
+</html>

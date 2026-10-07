@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第十二课：并行中断 ID</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0011-conditional-approval.html">上一课</a> · <a href="../learning.md">全章计划</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 12</p>
+  <h1>两个独立中断，用 ID 回答</h1>
+  <p>先前的批量工具审批是<strong>一个中断，内含两个 action_requests</strong>，按动作位置排列 <code>decisions</code>。这里是两个并行节点各自调用 <code>interrupt()</code>，产生<strong>两个独立的 Interrupt.id</strong>。恢复时将每个 ID 映射到对应答案。依据：<a href="https://docs.langchain.com/oss/python/langgraph/interrupts">LangGraph Interrupts</a>。</p>
+  <p>运行 <a href="../experiment/07-parallel-ids/parallel_ids_demo.py">parallel_ids_demo.py</a>：</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/07-parallel-ids/parallel_ids_demo.py</code></pre>
+  <p>脚本批准发布、拒绝归档，并打印恢复后的状态。这个例子只验证 LangGraph 的 ID 映射机制，因此不调用模型。</p>
+</main></body>
+</html>

@@ -2,7 +2,7 @@
 
 当前分支：`learning/task07`。本目录是第 9 章的教学工作区。
 
-当前状态：**核心审批流程已验证成功**（2026-10-07）。用户已核对模拟发布的批准与拒绝结果，见[记录 0008](learning-records/0008-verifies-capstone-demo.md)。`when` 条件、并行中断 ID 和子 Agent 审批仍待专项实践；综合策略由教师填写，尚不记为用户独立设计能力。
+当前状态：**核心审批流程已验证成功**（2026-10-07）。用户已核对模拟发布的批准与拒绝结果，见[记录 0008](learning-records/0008-verifies-capstone-demo.md)。`when` 条件、并行中断 ID 和子 Agent 审批的演示也已由教师实测通过；这些演示和综合策略配置不记为用户独立设计能力。
 
 ## 起点与目标
 
@@ -43,10 +43,21 @@
 - [第八课：恢复时节点重放](lessons/0008-interrupt-node-replay.html)
 - [第九课：让副作用经得起重放](lessons/0009-idempotent-side-effects.html)
 - [第十课：综合审批练习](lessons/0010-capstone-approval.html)
+- [第十一课：条件审批](lessons/0011-conditional-approval.html)
+- [第十二课：并行中断 ID](lessons/0012-parallel-interrupt-ids.html)
+- [第十三课：子 Agent 审批](lessons/0013-subagent-approval.html)
 - [边界速查](reference/hitl-boundaries.html)
 - [资源与版本记录](RESOURCES.md)
 
-当前状态：用户已完成单工具审批恢复实验，并通过 `get_state(config)` 验证暂停前有待处理任务、正常结束后 `next` 与 `tasks` 均为空，见记录 0005。同批两个动作实验也已运行，见记录 0006。用户正确预测 `interrupt()` 前代码在首次暂停与恢复时共执行两次、后面代码执行一次，见记录 0007。模拟发布综合练习已按用户要求由教师填写并用真实模型演示：批准后内存记录有一次发布，拒绝后记录为空。它证明演示脚本可用，不作为用户独立配置审批策略的证据；短课编号与计划节次不要求一一对应。
+教师验证记录（2026-10-07）：
+
+| 主题 | 观察结果 |
+| --- | --- |
+| `when` 条件 | `private` 首次无中断并保存一次；`public` 首次中断且记录为空，批准后保存一次 |
+| 并行中断 ID | 同时出现 2 个独立中断，按 ID 恢复后发布为 `True`、归档为 `False` |
+| 子 Agent 审批 | 发布工具只在子 Agent 中；暂停时记录为空，批准后记录一次 |
+
+上述结果来自演示脚本的实际运行。完整计划中的自定义 Middleware 审稿、文件权限审批、输入验证和异常传播尚未专项实践；短课编号与计划节次不要求一一对应。
 
 ## 保持记忆
 

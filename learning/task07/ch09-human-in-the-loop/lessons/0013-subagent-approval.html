@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>第 9 章 · 第十三课：子 Agent 审批</title>
+  <link rel="stylesheet" href="../assets/lesson.css">
+</head>
+<body><main>
+  <nav><a href="0012-parallel-interrupt-ids.html">上一课</a> · <a href="../learning.md">全章计划</a></nav>
+  <p class="kicker">Chapter 09 · Lesson 13</p>
+  <h1>把审批策略放在实际执行工具的子 Agent 上</h1>
+  <p>主 Agent 只负责委派，发布工具仅交给 <code>publisher</code> 子 Agent。该子 Agent 自己的 <code>interrupt_on</code> 配置在 <code>publish_draft</code> 执行前暂停。审批策略随实际工具所在的 Agent 配置；恢复仍使用原来的线程与 Checkpointer。依据：<a href="https://docs.langchain.com/oss/python/deepagents/human-in-the-loop">Deep Agents HITL</a>。</p>
+  <p>运行 <a href="../experiment/08-subagent/subagent_approval_demo.py">subagent_approval_demo.py</a>：</p>
+  <pre><code>learning/task07/.venv/bin/python learning/task07/ch09-human-in-the-loop/experiment/08-subagent/subagent_approval_demo.py</code></pre>
+  <p>检查暂停前内存发布记录为空，批准后恰好出现一次。真实模型可能改变委派路径；若没有中断，脚本会打印实际回复，不能把它记为通过。</p>
+</main></body>
+</html>
