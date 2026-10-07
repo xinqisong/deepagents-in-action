@@ -1,0 +1,22 @@
+[project]
+name = "course-brief-agent"
+version = "0.1.0"
+description = "Task 08 research brief demo: synchronous subagent and human approval"
+requires-python = ">=3.12"
+dependencies = [
+    "deepagents>=0.7.20,<0.8",
+    "langchain-openai>=1.6.2,<2",
+    "langgraph>=1.2,<2",
+    "langgraph-cli[inmem]>=0.4,<1",
+    "python-dotenv>=1.2.3,<2",
+]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]

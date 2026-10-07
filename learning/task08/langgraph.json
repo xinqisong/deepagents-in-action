@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "course_brief": "./src/course_brief_agent/graph.py:graph"
+  },
+  "env": "./.env"
+}

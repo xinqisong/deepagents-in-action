@@ -15,3 +15,14 @@ node_modules/
 
 # local planning docs (superpowers)
 docs/superpowers/
+
+# local agent tooling
+.agents/
+
+# local secrets and runtime artifacts
+**/.env
+**/.venv/
+**/.langgraph_api/
+**/__pycache__/
+*.py[cod]
+*.orig
